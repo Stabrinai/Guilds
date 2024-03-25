@@ -32,6 +32,7 @@ import co.aikar.commands.annotation.Dependency
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
 import co.aikar.commands.annotation.Syntax
+import fr.euphyllia.energie.utils.EntityUtils
 import java.util.concurrent.TimeUnit
 import me.glaremasters.guilds.Guilds
 import me.glaremasters.guilds.api.events.GuildSetHomeEvent
@@ -95,12 +96,12 @@ internal class CommandHome : BaseCommand() {
                 if (loc.distance(curr) > 1) {
                     guilds.commandManager.getCommandIssuer(player).sendInfo(Messages.HOME__CANCELLED)
                 } else {
-                    player.teleport(home.asLocation)
+                    EntityUtils.teleportAsync(player, home.asLocation)
                     guilds.commandManager.getCommandIssuer(player).sendInfo(Messages.HOME__TELEPORTED)
                 }
             }.execute()
         } else {
-            player.teleport(home.asLocation)
+            EntityUtils.teleportAsync(player, home.asLocation)
             currentCommandIssuer.sendInfo(Messages.HOME__TELEPORTED)
         }
     }

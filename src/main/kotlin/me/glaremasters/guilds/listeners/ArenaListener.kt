@@ -25,22 +25,20 @@ package me.glaremasters.guilds.listeners
 
 import ch.jalu.configme.SettingsManager
 import co.aikar.commands.ACFBukkitUtil
-import java.util.UUID
+import fr.euphyllia.energie.model.SchedulerType
+import fr.euphyllia.energie.utils.EntityUtils
 import me.glaremasters.guilds.Guilds
 import me.glaremasters.guilds.challenges.ChallengeHandler
 import me.glaremasters.guilds.configuration.sections.WarSettings
 import me.glaremasters.guilds.messages.Messages
 import me.glaremasters.guilds.utils.Constants
-import org.bukkit.Bukkit
-import org.bukkit.entity.Player
-import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerRespawnEvent
+import java.util.*
 
 class ArenaListener(private val guilds: Guilds, private val challengeHandler: ChallengeHandler, private val settingsManager: SettingsManager) : Listener {
     private val playerDeath = mutableMapOf<UUID, String>()
@@ -85,11 +83,11 @@ class ArenaListener(private val guilds: Guilds, private val challengeHandler: Ch
         if (player.uniqueId !in playerDeath) {
             return
         }
-        Bukkit.getScheduler().runTaskLater(guilds, Runnable {
+        Guilds.getScheduler().runDelayed(SchedulerType.SYNC, player, {
             val loc = ACFBukkitUtil.stringToLocation(playerDeath[player.uniqueId])
-            player.teleport(loc)
+            EntityUtils.teleportAsync(player, loc)
             playerDeath.remove(player.uniqueId)
-        }, 1L)
+        }, null, 1L)
     }
 
     @EventHandler

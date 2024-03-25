@@ -23,6 +23,9 @@
  */
 package me.glaremasters.guilds.tasks;
 
+import fr.euphyllia.energie.model.SchedulerRunnable;
+import fr.euphyllia.energie.model.SchedulerTaskInter;
+import fr.euphyllia.energie.model.SchedulerType;
 import me.glaremasters.guilds.Guilds;
 import me.glaremasters.guilds.challenges.ChallengeHandler;
 import me.glaremasters.guilds.configuration.sections.WarSettings;
@@ -31,7 +34,6 @@ import me.glaremasters.guilds.messages.Messages;
 import me.glaremasters.guilds.utils.WarUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 import java.util.UUID;
@@ -43,7 +45,7 @@ import java.util.stream.Stream;
  * Date: 7/13/2019
  * Time: 6:42 PM
  */
-public class GuildWarJoinTask extends BukkitRunnable {
+public class GuildWarJoinTask implements SchedulerRunnable {
 
     private final Guilds guilds;
     private int timeLeft;
@@ -54,8 +56,9 @@ public class GuildWarJoinTask extends BukkitRunnable {
     private final GuildChallenge challenge;
     private final ChallengeHandler challengeHandler;
     private final String notifyType;
+    private final SchedulerTaskInter taskInter;
 
-    public GuildWarJoinTask(Guilds guilds, int timeLeft, int readyTime, List<UUID> players, String joinMsg, String readyMsg, GuildChallenge challenge, ChallengeHandler challengeHandler) {
+    public GuildWarJoinTask(Guilds guilds, int timeLeft, int readyTime, List<UUID> players, String joinMsg, String readyMsg, GuildChallenge challenge, ChallengeHandler challengeHandler, SchedulerTaskInter inter) {
         this.guilds = guilds;
         this.timeLeft = timeLeft;
         this.readyTime = readyTime;
@@ -65,6 +68,7 @@ public class GuildWarJoinTask extends BukkitRunnable {
         this.challenge = challenge;
         this.challengeHandler = challengeHandler;
         this.notifyType = guilds.getSettingsHandler().getMainConf().getProperty(WarSettings.NOTIFY_TYPE);
+        this.taskInter = inter;
     }
 
 
@@ -84,12 +88,12 @@ public class GuildWarJoinTask extends BukkitRunnable {
                 challenge.getDefender().sendMessage(guilds.getCommandManager(), Messages.WAR__NOT_ENOUGH_JOINED);
                 challenge.getArena().setInUse(false);
                 challengeHandler.removeChallenge(challenge.getId());
-                cancel();
+                taskInter.cancel();
                 return;
             }
             List<UUID> warReady = Stream.concat(challenge.getChallengePlayers().stream(), challenge.getDefendPlayers().stream()).collect(Collectors.toList());
-            new GuildWarReadyTask(guilds, readyTime, warReady, readyMsg, challenge, challengeHandler).runTaskTimer(guilds, 0L, 20L);
-            cancel();
+            Guilds.getScheduler().runAtFixedRate(SchedulerType.SYNC, task -> new GuildWarReadyTask(guilds, readyTime, warReady, readyMsg, challenge, challengeHandler, task), 1L, 20L);
+            taskInter.cancel();
         }
     }
 }

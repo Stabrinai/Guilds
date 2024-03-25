@@ -35,6 +35,7 @@ import co.aikar.commands.annotation.Single
 import co.aikar.commands.annotation.Subcommand
 import co.aikar.commands.annotation.Syntax
 import co.aikar.commands.annotation.Values
+import fr.euphyllia.energie.utils.EntityUtils
 import java.util.UUID
 import me.glaremasters.guilds.Guilds
 import me.glaremasters.guilds.arena.Arena
@@ -115,12 +116,12 @@ internal class CommandAdminArena : BaseCommand() {
             if (arena.challenger == null) {
                 throw ExpectationNotMet(Messages.ARENA__POSITION_NOT_SET)
             }
-            player.teleport(ACFBukkitUtil.stringToLocation(arena.challenger))
+            EntityUtils.teleportAsync(player, ACFBukkitUtil.stringToLocation(arena.challenger))
         } else if (location.equals("defender", ignoreCase = true)) {
             if (arena.defender == null) {
                 throw ExpectationNotMet(Messages.ARENA__POSITION_NOT_SET)
             }
-            player.teleport(ACFBukkitUtil.stringToLocation(arena.defender))
+            EntityUtils.teleportAsync(player, ACFBukkitUtil.stringToLocation(arena.defender))
         }
         currentCommandIssuer.sendInfo(Messages.ARENA__TELEPORTED_TO_SELECTION, "{team}", location, "{arena}", arena.name)
     }

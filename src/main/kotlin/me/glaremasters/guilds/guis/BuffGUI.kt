@@ -28,6 +28,8 @@ import co.aikar.commands.PaperCommandManager
 import com.cryptomorin.xseries.XPotion
 import dev.triumphteam.gui.guis.GuiItem
 import dev.triumphteam.gui.guis.PaginatedGui
+import fr.euphyllia.energie.model.SchedulerType
+import me.glaremasters.guilds.Guilds
 import me.glaremasters.guilds.api.events.GuildBuffEvent
 import me.glaremasters.guilds.conf.GuildBuffSettings
 import me.glaremasters.guilds.conf.objects.GuildBuff
@@ -144,7 +146,9 @@ class BuffGUI(private val buffConfig: SettingsManager, private val cooldownHandl
         players.forEach { player ->
             commands.forEach {
                 val update = it.replace("{player}", player.name).replace("{buyer}", buyer.name).replace("{buff_name}", buff.unlocked.name)
-                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), update)
+                Guilds.getScheduler().runTask(SchedulerType.SYNC) {
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), update)
+                }
             }
         }
     }

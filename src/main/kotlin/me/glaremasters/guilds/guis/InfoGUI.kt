@@ -28,6 +28,7 @@ import co.aikar.commands.ACFBukkitUtil
 import co.aikar.commands.PaperCommandManager
 import dev.triumphteam.gui.guis.Gui
 import dev.triumphteam.gui.guis.GuiItem
+import fr.euphyllia.energie.utils.EntityUtils
 import me.glaremasters.guilds.Guilds
 import me.glaremasters.guilds.configuration.sections.CooldownSettings
 import me.glaremasters.guilds.configuration.sections.GuildInfoSettings
@@ -129,12 +130,12 @@ class InfoGUI(private val guilds: Guilds, private val settingsManager: SettingsM
                     if (initial.distance(curr) > 1) {
                         guilds.commandManager.getCommandIssuer(player).sendInfo(Messages.HOME__CANCELLED)
                     } else {
-                        player.teleport(teleportingTo)
+                        EntityUtils.teleportAsync(player, teleportingTo)
                         guilds.commandManager.getCommandIssuer(player).sendInfo(Messages.HOME__TELEPORTED)
                     }
                 }.execute()
             } else {
-                player.teleport(teleportingTo)
+                EntityUtils.teleportAsync(player, teleportingTo)
                 manager.getCommandIssuer(player).sendInfo(Messages.HOME__TELEPORTED)
             }
             cooldownHandler.addCooldown(player, cooldownName, settingsManager.getProperty(CooldownSettings.HOME), TimeUnit.SECONDS)

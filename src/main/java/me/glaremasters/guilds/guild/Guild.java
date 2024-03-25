@@ -25,7 +25,7 @@ package me.glaremasters.guilds.guild;
 
 import ch.jalu.configme.SettingsManager;
 import co.aikar.commands.CommandManager;
-import com.cryptomorin.xseries.SkullUtils;
+import fr.euphyllia.energie.model.SchedulerType;
 import me.glaremasters.guilds.Guilds;
 import me.glaremasters.guilds.configuration.sections.GuildListSettings;
 import me.glaremasters.guilds.messages.Messages;
@@ -567,7 +567,7 @@ public class Guild {
      * @param amplifier the strength of the potion
      */
     public void addPotion(String type, int length, int amplifier) {
-        getOnlineAsPlayers().forEach(p -> p.addPotionEffect(new PotionEffect(PotionEffectType.getByName(type), length, amplifier)));
+        getOnlineAsPlayers().forEach(p -> Guilds.getScheduler().runTask(SchedulerType.SYNC, p, task -> p.addPotionEffect(new PotionEffect(PotionEffectType.getByName(type), length, amplifier)), null));
     }
 
     /**
@@ -603,7 +603,7 @@ public class Guild {
     }
 
     public void addPotion(PotionEffect effect) {
-        getOnlineAsPlayers().forEach(p -> p.addPotionEffect(effect));
+        getOnlineAsPlayers().forEach(p -> Guilds.getScheduler().runTask(SchedulerType.SYNC, p, task -> p.addPotionEffect(effect), null));
     }
 
     public UUID getId() {

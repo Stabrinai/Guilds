@@ -4,6 +4,7 @@ main: me.glaremasters.guilds.Guilds
 authors: [Glare]
 softdepend: [Vault, WorldGuard, PlaceholderAPI, Essentials]
 api-version: 1.13
+folia-supported: true
 description: Guilds
 website: https://glaremasters.me/discord
 

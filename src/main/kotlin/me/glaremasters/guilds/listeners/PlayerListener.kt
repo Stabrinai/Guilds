@@ -24,6 +24,7 @@
 package me.glaremasters.guilds.listeners
 
 import ch.jalu.configme.SettingsManager
+import fr.euphyllia.energie.model.SchedulerType
 import java.io.IOException
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -37,7 +38,6 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.milkbowl.vault.permission.Permission
-import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
@@ -79,7 +79,7 @@ class PlayerListener(private val guilds: Guilds, private val settingsManager: Se
         if (!settingsManager.getProperty(GuildSettings.MOTD_ON_LOGIN)) {
             return
         }
-        Bukkit.getScheduler().runTaskLater(guilds, Runnable {
+        Guilds.getScheduler().runDelayed(SchedulerType.SYNC, {
             guilds.commandManager.getCommandIssuer(player).sendInfo(Messages.MOTD__MOTD, "{motd}", motd)
         }, 100L)
     }

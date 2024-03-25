@@ -25,6 +25,8 @@ package me.glaremasters.guilds.tasks;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import fr.euphyllia.energie.model.SchedulerRunnable;
+import fr.euphyllia.energie.model.SchedulerTaskInter;
 import me.glaremasters.guilds.Guilds;
 import me.glaremasters.guilds.api.events.challenges.GuildWarStartEvent;
 import me.glaremasters.guilds.challenges.ChallengeHandler;
@@ -34,7 +36,6 @@ import me.glaremasters.guilds.messages.Messages;
 import me.glaremasters.guilds.utils.WarUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ import java.util.UUID;
  * Date: 7/13/2019
  * Time: 6:49 PM
  */
-public class GuildWarReadyTask extends BukkitRunnable {
+public class GuildWarReadyTask implements SchedulerRunnable {
 
     private final Guilds guilds;
     private int timeLeft;
@@ -54,8 +55,9 @@ public class GuildWarReadyTask extends BukkitRunnable {
     private final GuildChallenge challenge;
     private final ChallengeHandler challengeHandler;
     private final String notifyType;
+    private final SchedulerTaskInter taskInter;
 
-    public GuildWarReadyTask(Guilds guilds, int timeLeft, List<UUID> players, String message, GuildChallenge challenge, ChallengeHandler challengeHandler) {
+    public GuildWarReadyTask(Guilds guilds, int timeLeft, List<UUID> players, String message, GuildChallenge challenge, ChallengeHandler challengeHandler, SchedulerTaskInter inter) {
         this.guilds = guilds;
         this.timeLeft = timeLeft;
         this.players = players;
@@ -63,6 +65,7 @@ public class GuildWarReadyTask extends BukkitRunnable {
         this.challenge = challenge;
         this.challengeHandler = challengeHandler;
         this.notifyType = guilds.getSettingsHandler().getMainConf().getProperty(WarSettings.NOTIFY_TYPE);
+        this.taskInter = inter;
     }
 
     @Override
@@ -81,7 +84,7 @@ public class GuildWarReadyTask extends BukkitRunnable {
                 challenge.getDefender().sendMessage(guilds.getCommandManager(), Messages.WAR__NOT_ENOUGH_ON);
                 challenge.getArena().setInUse(false);
                 challengeHandler.removeChallenge(challenge);
-                cancel();
+                taskInter.cancel();
                 return;
             }
             // Create final list for both sides
@@ -117,7 +120,7 @@ public class GuildWarReadyTask extends BukkitRunnable {
             challenge.setStarted(true);
             challenge.getDefender().setLastDefended(System.currentTimeMillis());
             Bukkit.getPluginManager().callEvent(new GuildWarStartEvent(challenge.getChallenger(), challenge.getDefender()));
-            cancel();
+            taskInter.cancel();
         }
     }
 }

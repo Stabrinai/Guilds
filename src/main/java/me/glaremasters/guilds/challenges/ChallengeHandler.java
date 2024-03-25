@@ -26,6 +26,8 @@ package me.glaremasters.guilds.challenges;
 import ch.jalu.configme.SettingsManager;
 import co.aikar.commands.ACFBukkitUtil;
 import co.aikar.commands.PaperCommandManager;
+import fr.euphyllia.energie.model.SchedulerType;
+import fr.euphyllia.energie.utils.EntityUtils;
 import me.glaremasters.guilds.Guilds;
 import me.glaremasters.guilds.api.events.challenges.GuildWarEndEvent;
 import me.glaremasters.guilds.arena.Arena;
@@ -37,6 +39,7 @@ import me.glaremasters.guilds.guild.GuildRolePerm;
 import me.glaremasters.guilds.messages.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -241,7 +244,7 @@ public class ChallengeHandler {
         players.keySet().forEach(p -> {
             Player player = Bukkit.getPlayer(p);
             if (player != null) {
-                player.teleport(location);
+                EntityUtils.teleportAsync(player, location);
             }
         });
     }
@@ -254,9 +257,9 @@ public class ChallengeHandler {
     public void exitArena(Player player, GuildChallenge challenge, Guilds guilds) {
         String location = getAllPlayersAlive(challenge).get(player.getUniqueId());
         if (location != null) {
-            player.teleport(ACFBukkitUtil.stringToLocation(location));
+            EntityUtils.teleportAsync(player, ACFBukkitUtil.stringToLocation(location));
             guilds.getCommandManager().getCommandIssuer(player).sendInfo(Messages.WAR__TELEPORTED_BACK);
-            player.setHealth(player.getMaxHealth());
+            Guilds.getScheduler().runTask(SchedulerType.SYNC, player, task -> player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()), null);
         }
     }
 
@@ -277,7 +280,7 @@ public class ChallengeHandler {
         getAllPlayersAlive(challenge).forEach((key, value) -> {
             final Location location = ACFBukkitUtil.stringToLocation(value);
             final Player player = Bukkit.getPlayer(key);
-            Bukkit.getScheduler().runTaskLater(guilds, () -> player.teleport(location), 1L);
+            Guilds.getScheduler().runDelayed(SchedulerType.ASYNC, player, task -> EntityUtils.teleportAsync(player, location), null, 1L);
         });
     }
 
@@ -375,8 +378,8 @@ public class ChallengeHandler {
                 Player player = Bukkit.getPlayer(p);
                 if (player != null) {
                     commands.forEach(c -> {
-                        c = c.replace("{player}", player.getName());
-                        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), c);
+                        String command = c.replace("{player}", player.getName());
+                        Guilds.getScheduler().runTask(SchedulerType.SYNC, task -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), command));
                     });
                 }
             });
@@ -428,8 +431,9 @@ public class ChallengeHandler {
                         c = c.replace("{challenger}", challenge.getChallenger().getName());
                         c = c.replace("{defender}", challenge.getDefender().getName());
                         c = c.replace("{winner}", challenge.getWinner().getName());
-                        c = c.replace("{loser}", challenge.getLoser().getName());
-                        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), c);
+                        String command = c.replace("{loser}", challenge.getLoser().getName());
+                        Guilds.getScheduler().runTask(SchedulerType.SYNC, task -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), command));
+
                 });
             }
             Bukkit.getPluginManager().callEvent(new GuildWarEndEvent(challenge.getChallenger(), challenge.getDefender(), challenge.getWinner()));

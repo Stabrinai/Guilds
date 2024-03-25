@@ -24,6 +24,7 @@
 package me.glaremasters.guilds.listeners;
 
 import ch.jalu.configme.SettingsManager;
+import fr.euphyllia.energie.model.SchedulerType;
 import me.glaremasters.guilds.Guilds;
 import me.glaremasters.guilds.configuration.sections.ClaimSettings;
 import me.glaremasters.guilds.guild.Guild;
@@ -153,8 +154,7 @@ public class ClaimSignListener implements Listener {
             ClaimUtils.setEnterMessage(wrapper, region, settingsManager, guild);
             ClaimUtils.setExitMessage(wrapper, region, settingsManager, guild);
         });
-
-        player.getWorld().getBlockAt(block.getLocation()).breakNaturally();
+        Guilds.getScheduler().runTask(SchedulerType.SYNC, block.getLocation(), task -> player.getWorld().getBlockAt(block.getLocation()).breakNaturally());
 
         guild.setBalance(guild.getBalance() - Double.valueOf(sign.getLine(2)));
 

@@ -35,6 +35,7 @@ import co.aikar.commands.annotation.Flags
 import co.aikar.commands.annotation.Subcommand
 import co.aikar.commands.annotation.Syntax
 import co.aikar.commands.annotation.Values
+import fr.euphyllia.energie.utils.EntityUtils
 import me.glaremasters.guilds.Guilds
 import me.glaremasters.guilds.exceptions.ExpectationNotMet
 import me.glaremasters.guilds.guild.Guild
@@ -66,7 +67,7 @@ internal class CommandAdminHome : BaseCommand() {
     @Syntax("%guild")
     fun home(player: Player, @Flags("other") @Values("@guilds") guild: Guild) {
         val home = guild.home ?: throw ExpectationNotMet(Messages.HOME__NO_HOME_SET)
-        player.teleport(home.asLocation)
+        EntityUtils.teleportAsync(player, home.asLocation)
         currentCommandIssuer.sendInfo(Messages.ADMIN__HOME, "{guild}", guild.name)
     }
 

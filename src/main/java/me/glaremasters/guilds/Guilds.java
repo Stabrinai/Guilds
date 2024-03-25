@@ -30,6 +30,9 @@ import co.aikar.taskchain.TaskChainFactory;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import fr.euphyllia.energie.Energie;
+import fr.euphyllia.energie.model.Scheduler;
+import fr.euphyllia.energie.model.SchedulerType;
 import io.github.slimjar.app.builder.ApplicationBuilder;
 import io.github.slimjar.resolver.data.Repository;
 import io.github.slimjar.resolver.mirrors.SimpleMirrorSelector;
@@ -58,7 +61,6 @@ import me.glaremasters.guilds.listeners.VaultBlacklistListener;
 import me.glaremasters.guilds.listeners.WorldGuardListener;
 import me.glaremasters.guilds.placeholders.PlaceholderAPI;
 import me.glaremasters.guilds.updater.UpdateChecker;
-import me.glaremasters.guilds.utils.BackupUtils;
 import me.glaremasters.guilds.utils.LanguageUpdater;
 import me.glaremasters.guilds.utils.LoggingUtils;
 import me.glaremasters.guilds.utils.StringUtils;
@@ -102,6 +104,7 @@ public final class Guilds extends JavaPlugin {
     private Permission permissions;
     private BukkitAudiences adventure;
     private ChatListener chatListener;
+    private static Energie energie;
 
     public static Gson getGson() {
         return gson;
@@ -177,6 +180,7 @@ public final class Guilds extends JavaPlugin {
     @Override
     public void onEnable() {
         LoggingUtils.logLogo(Bukkit.getConsoleSender(), this);
+        energie = new Energie(this);
 
         // Check if the server is running Vault
         if (!Bukkit.getPluginManager().isPluginEnabled("Vault")) {
@@ -292,7 +296,7 @@ public final class Guilds extends JavaPlugin {
         chatListener = new ChatListener(this);
 
         LoggingUtils.info("Ready to go! That only took " + (System.currentTimeMillis() - startingTime) + "ms");
-        getServer().getScheduler().scheduleAsyncRepeatingTask(this, () -> {
+        getScheduler().scheduleSyncRepeating(SchedulerType.ASYNC, task -> {
             try {
                 if (guildHandler.isMigrating()) {
                     return;
@@ -411,5 +415,9 @@ public final class Guilds extends JavaPlugin {
 
     public ChatListener getChatListener() {
         return chatListener;
+    }
+
+    public static Scheduler getScheduler() {
+        return energie.getMinecraftScheduler();
     }
 }

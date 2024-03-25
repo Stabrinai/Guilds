@@ -23,18 +23,18 @@
  */
 package me.glaremasters.guilds.tasks;
 
+import fr.euphyllia.energie.model.SchedulerRunnable;
 import me.glaremasters.guilds.Guilds;
 import me.glaremasters.guilds.challenges.ChallengeHandler;
 import me.glaremasters.guilds.guild.GuildChallenge;
 import me.glaremasters.guilds.messages.Messages;
-import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Created by Glare
  * Date: 7/13/2019
  * Time: 6:23 PM
  */
-public class GuildWarChallengeCheckTask extends BukkitRunnable {
+public class GuildWarChallengeCheckTask implements SchedulerRunnable {
 
     private Guilds guilds;
     private GuildChallenge challenge;

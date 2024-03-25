@@ -34,6 +34,7 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Flags
 import co.aikar.commands.annotation.Subcommand
 import co.aikar.commands.annotation.Syntax
+import fr.euphyllia.energie.model.SchedulerType
 import java.util.stream.Collectors
 import java.util.stream.Stream
 import me.glaremasters.guilds.Guilds
@@ -100,7 +101,7 @@ internal class CommandWar : BaseCommand() {
         val joinMsg = currentCommandManager.locales.getMessage(currentCommandIssuer, Messages.WAR__ACTION_BAR_JOIN.messageKey)
         val readyMsg = currentCommandManager.locales.getMessage(currentCommandIssuer, Messages.WAR__ACTION_BAR_READY.messageKey)
 
-        GuildWarJoinTask(guilds, joinTime, readyTime, online, joinMsg, readyMsg, challenge, challengeHandler).runTaskTimer(guilds, 0L, 20L)
+        Guilds.getScheduler().runAtFixedRate(SchedulerType.SYNC, { task -> GuildWarJoinTask(guilds, joinTime, readyTime, online, joinMsg, readyMsg, challenge, challengeHandler, task) }, 0L, 20L)
     }
 
     @Subcommand("war challenge")
@@ -166,7 +167,7 @@ internal class CommandWar : BaseCommand() {
 
         challengeHandler.pingOnlineDefenders(targetGuild, guilds.commandManager, guild.name, acceptTime)
 
-        GuildWarChallengeCheckTask(guilds, challenge, challengeHandler).runTaskLater(guilds, (acceptTime * 20).toLong())
+        Guilds.getScheduler().runDelayed(SchedulerType.SYNC, { GuildWarChallengeCheckTask(guilds, challenge, challengeHandler) }, (acceptTime * 20).toLong())
     }
 
     @Subcommand("war deny")
