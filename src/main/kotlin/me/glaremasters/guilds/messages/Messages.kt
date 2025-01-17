@@ -25,6 +25,7 @@ package me.glaremasters.guilds.messages
 
 import co.aikar.locales.MessageKey
 import co.aikar.locales.MessageKeyProvider
+import java.util.*
 
 /**
  * Created by GlareMasters
@@ -260,8 +261,8 @@ enum class Messages : MessageKeyProvider {
     ARENA__POSITION_NOT_SET,
     ARENA__TELEPORTED_TO_SELECTION,
     ARENA__ALL_FULL,
-    ARENA__LOCATION__ISSUE__CHALLENGER,
-    ARENA__LOCATION__ISSUE__DEFENDER,
+    ARENA__LOCATION_ISSUE_CHALLENGER,
+    ARENA__LOCATION_ISSUE_DEFENDER,
 
     WAR__NO_DEFENDERS,
     WAR__CHALLENGE_SENT,
@@ -302,7 +303,7 @@ enum class Messages : MessageKeyProvider {
     /**
      * Message keys that grab from the config to send messages
      */
-    private val key = MessageKey.of(name.toLowerCase().replace("__", ".").replace("_", "-"))
+    private val key = MessageKey.of(name.lowercase(Locale.getDefault()).replace("__", ".").replace("_", "-"))
 
     /**
      * Get the message get from the config

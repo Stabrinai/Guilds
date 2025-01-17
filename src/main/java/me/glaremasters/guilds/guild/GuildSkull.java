@@ -23,12 +23,13 @@
  */
 package me.glaremasters.guilds.guild;
 
-import com.cryptomorin.xseries.SkullUtils;
-import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.profiles.builder.XSkull;
+import com.cryptomorin.xseries.profiles.objects.ProfileInputType;
+import com.cryptomorin.xseries.profiles.objects.Profileable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 
+import java.util.Base64;
 import java.util.Objects;
 
 /**
@@ -44,8 +45,10 @@ public class GuildSkull {
      * @param player the player whose head will be used for the guild skull
      */
     public GuildSkull(Player player) {
-        itemStack = SkullUtils.getSkull(player.getUniqueId());
-        serialized = SkullUtils.getSkinValue(Objects.requireNonNull(itemStack.getItemMeta()));
+        final Profileable playerProfile = Profileable.of(player);
+
+        itemStack = XSkull.createItem().profile(playerProfile).apply();
+        serialized = XSkull.of(itemStack.getItemMeta()).getProfileValue();
     }
 
     /**
@@ -54,8 +57,15 @@ public class GuildSkull {
      * @param texture the texture string, which should be a Minecraft resource location string
      */
     public GuildSkull(String texture) {
-        serialized = SkullUtils.encodeTexturesURL(texture);
-        itemStack = createSkull();
+        final ProfileInputType type = ProfileInputType.typeOf(texture);
+
+        if (type == null) {
+            this.serialized = Base64.getEncoder().encodeToString(Objects.requireNonNull(texture).getBytes());
+        } else {
+            this.serialized = texture;
+        }
+
+        this.itemStack = createSkull();
     }
 
     /**
@@ -64,11 +74,18 @@ public class GuildSkull {
      * @return the guild skull
      */
     public ItemStack createSkull() {
-        final ItemStack head = XMaterial.PLAYER_HEAD.parseItem();
-        SkullMeta meta = (SkullMeta) head.getItemMeta();
-        meta = SkullUtils.applySkin(meta, serialized);
-        head.setItemMeta(meta);
-        return head;
+        final ProfileInputType type = ProfileInputType.typeOf(serialized);
+
+        if (type == null) {
+            final ProfileInputType backupType = ProfileInputType.typeOf("c10591e6909e6a281b371836e462d67a2c78fa0952e910f32b41a26c48c1757c");
+            final Profileable backupProfile = Profileable.of(backupType, serialized);
+
+            return XSkull.createItem().profile(backupProfile).apply();
+        }
+
+        final Profileable playerProfile = Profileable.of(type, serialized);
+
+        return XSkull.createItem().profile(playerProfile).apply();
     }
 
     /**

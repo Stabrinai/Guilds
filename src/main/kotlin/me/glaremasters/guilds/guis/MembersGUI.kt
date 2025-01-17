@@ -24,17 +24,12 @@
 package me.glaremasters.guilds.guis
 
 import ch.jalu.configme.SettingsManager
-import com.cryptomorin.xseries.SkullUtils
-import dev.triumphteam.gui.guis.Gui
 import dev.triumphteam.gui.guis.GuiItem
 import dev.triumphteam.gui.guis.PaginatedGui
 import me.glaremasters.guilds.Guilds
-import me.glaremasters.guilds.conf.GuildBuffSettings
 import me.glaremasters.guilds.configuration.sections.ExperimentalSettings
 import me.glaremasters.guilds.configuration.sections.GuildInfoMemberSettings
 import me.glaremasters.guilds.configuration.sections.GuildListSettings
-import me.glaremasters.guilds.configuration.sections.PluginSettings
-import me.glaremasters.guilds.exte.addBackground
 import me.glaremasters.guilds.exte.addBottom
 import me.glaremasters.guilds.guild.Guild
 import me.glaremasters.guilds.guild.GuildHandler
@@ -94,7 +89,7 @@ class MembersGUI(private val guilds: Guilds, private val settingsManager: Settin
     private fun addItems(gui: PaginatedGui, guild: Guild, player: Player) {
         val members = guild.members
 
-        when (settingsManager.getProperty(GuildInfoMemberSettings.SORT_ORDER).toUpperCase()) {
+        when (settingsManager.getProperty(GuildInfoMemberSettings.SORT_ORDER).uppercase(Locale.getDefault())) {
             "ROLE" -> members.sortWith(Comparator.comparingInt { g: GuildMember -> g.role.level })
             "NAME" -> members.sortWith(compareBy(GuildMember::name))
             "AGE" -> members.sortWith(Comparator.comparingLong(GuildMember::joinDate))
