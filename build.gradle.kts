@@ -58,7 +58,7 @@ dependencies {
     implementation("co.aikar:taskchain-bukkit:3.7.2")
     implementation("org.codemc.worldguardwrapper:worldguardwrapper:1.1.9-SNAPSHOT")
     implementation("ch.jalu:configme:1.3.0")
-    implementation("com.github.Euphillya:Energie:1.1.9")
+    implementation("com.github.Euphillya:Energie:1.2.0")
     implementation("com.dumptruckman.minecraft:JsonConfiguration:1.1")
     implementation("com.github.cryptomorin:XSeries:12.1.0")
     implementation("net.kyori:adventure-platform-bukkit:4.3.4")
@@ -135,9 +135,7 @@ tasks {
     shadowJar {
         fun relocates(vararg dependencies: String) {
             dependencies.forEach {
-                val split = it.split(".")
-                val name = split.last()
-                relocate(it, "me.glaremasters.guilds.libs.$name")
+                relocate(it, "me.glaremasters.guilds.libs.$it")
             }
         }
 
@@ -155,9 +153,7 @@ tasks {
     slimJar {
         fun relocates(vararg dependencies: String) {
             dependencies.forEach {
-                val split = it.split(".")
-                val name = split.last()
-                relocate(it, "me.glaremasters.guilds.libs.$name")
+                relocate(it, "me.glaremasters.guilds.libs.$it")
             }
         }
 

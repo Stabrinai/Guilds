@@ -259,7 +259,7 @@ public class ChallengeHandler {
         if (location != null) {
             EntityUtils.teleportAsync(player, ACFBukkitUtil.stringToLocation(location));
             guilds.getCommandManager().getCommandIssuer(player).sendInfo(Messages.WAR__TELEPORTED_BACK);
-            Guilds.getScheduler().runTask(SchedulerType.SYNC, player, task -> player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()), null);
+            Guilds.getScheduler().runTask(SchedulerType.SYNC, player, task -> player.setHealth(player.getAttribute(Attribute.MAX_HEALTH).getValue()), null);
         }
     }
 
